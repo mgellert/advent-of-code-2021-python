@@ -7,10 +7,4 @@ def read_file_to_int(name: str) -> List[int]:
 
 
 def count_larger_measurements(measurements: List[int]) -> int:
-    larger_count = 0
-    prev = None
-    for m in measurements:
-        if prev and m > prev:
-            larger_count += 1
-        prev = m
-    return larger_count
+    return sum([1 for a, b in list(zip(measurements[:-1], measurements[1:])) if b > a])
