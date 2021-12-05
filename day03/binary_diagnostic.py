@@ -37,6 +37,7 @@ def calculate_power_consumption(lines: List[str]) -> int:
     return int(gamma, 2) * int(epsilon, 2)
 
 
+# TODO: the next two functions can be combined
 def _calculate_oxygen_rating(lines: List[str], pos: int = 0) -> int:
     if len(lines) == 1:
         return int(lines[0], 2)
