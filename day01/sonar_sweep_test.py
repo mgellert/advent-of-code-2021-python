@@ -1,36 +1,25 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day01.sonar_sweep import count_larger_measurements, read_file_to_int, count_larger_sums
-
-
-@dataclass
-class TestCase:
-    input: List[int]
-    expected: int
+from common import read_file_to_ints
+from day01.sonar_sweep import part_1, part_2
 
 
 class SonarSweepTest(unittest.TestCase):
-    def test_count_larger_measurements(self):
-        testcases = [
-            TestCase(input=[199, 200, 208, 210, 200, 207, 240, 269, 260, 263], expected=7),
-            TestCase(input=read_file_to_int("day01"), expected=1832)
-        ]
+    def test_part_1_example(self):
+        measurements = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
+        self.assertEqual(part_1(measurements), 7)
 
-        for case in testcases:
-            actual = count_larger_measurements(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_solution(self):
+        measurements = read_file_to_ints("day01")
+        self.assertEqual(part_1(measurements), 1832)
 
-    def test_count_larger_sums(self):
-        testcases = [
-            TestCase(input=[199, 200, 208, 210, 200, 207, 240, 269, 260, 263], expected=5),
-            TestCase(input=read_file_to_int("day01"), expected=1858)
-        ]
+    def test_part_2_example(self):
+        measurements = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
+        self.assertEqual(part_2(measurements), 5)
 
-        for case in testcases:
-            actual = count_larger_sums(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_2_solution(self):
+        measurements = read_file_to_ints("day01")
+        self.assertEqual(part_2(measurements), 1858)
 
 
 if __name__ == '__main__':
