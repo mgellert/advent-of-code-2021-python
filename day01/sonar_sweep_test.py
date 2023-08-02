@@ -5,12 +5,14 @@ from day01.sonar_sweep import part_1, part_2
 
 
 class SonarSweepTest(unittest.TestCase):
+    input = read_file_to_ints("day01")
+
     def test_part_1_example(self):
         measurements = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263]
         self.assertEqual(part_1(measurements), 7)
 
     def test_part_1_solution(self):
-        measurements = read_file_to_ints("day01")
+        measurements = self.input
         self.assertEqual(part_1(measurements), 1832)
 
     def test_part_2_example(self):
@@ -18,7 +20,7 @@ class SonarSweepTest(unittest.TestCase):
         self.assertEqual(part_2(measurements), 5)
 
     def test_part_2_solution(self):
-        measurements = read_file_to_ints("day01")
+        measurements = self.input
         self.assertEqual(part_2(measurements), 1858)
 
 
