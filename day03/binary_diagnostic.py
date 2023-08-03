@@ -1,70 +1,44 @@
-from typing import List, Dict
+from _decimal import Decimal, ROUND_HALF_UP
+from statistics import mean
+from typing import List
 
 
-def read_file(name: str) -> List[str]:
-    with open(f"../inputs/{name}", "r") as file:
-        return [line for line in file]
+def _find_most_common_bit(diagnostics: List[str], col: int) -> str:
+    column = [int(line[col]) for line in diagnostics]
+    # cannot use round() because round(0.5) = 0
+    rounded = Decimal(mean(column)).to_integral_value(rounding=ROUND_HALF_UP)
+    return str(int(rounded))
 
 
-def _calculate_stats(lines: List[str]) -> Dict[int, Dict[str, int]]:
-    stats = {}
-    for line in lines:
-        for i, c in enumerate(line.strip()):
-            if i not in stats:
-                stats[i] = {}
-            if c not in stats[i]:
-                stats[i][c] = 0
-            stats[i][c] += 1
-    return stats
+def _invert_bit(bit: str) -> str:
+    return "0" if bit == "1" else "1"
 
 
-def _calculate_bit_occurrence(stats: Dict[int, Dict[str, int]]) -> (str, str):
+def part_1(diagnostics: List[str]) -> int:
+    row_len = len(diagnostics[0])
     gamma = ""
     epsilon = ""
-    for i, occurrence in stats.items():
-        if occurrence["1"] > occurrence["0"]:
-            gamma += "1"
-            epsilon += "0"
-        else:
-            epsilon += "1"
-            gamma += "0"
-    return gamma, epsilon
-
-
-def calculate_power_consumption(lines: List[str]) -> int:
-    stats = _calculate_stats(lines)
-    gamma, epsilon = _calculate_bit_occurrence(stats)
+    for i in range(0, row_len):
+        most_common_bit = _find_most_common_bit(diagnostics, i)
+        gamma += most_common_bit
+        epsilon += _invert_bit(most_common_bit)
     return int(gamma, 2) * int(epsilon, 2)
 
 
-# TODO: the next two functions can be combined
-def _calculate_oxygen_rating(lines: List[str], pos: int = 0) -> int:
-    if len(lines) == 1:
-        return int(lines[0], 2)
-
-    stats = _calculate_stats(lines)
-
-    keep = "1"
-    if stats[pos]["0"] > stats[pos]["1"]:
-        keep = "0"
-    lines = [line for line in lines if line[pos] == keep]
-    return _calculate_oxygen_rating(lines, pos + 1)
+def _filter_diagnostics(diagnostics: List[str], row_len: int, invert: bool = False) -> str:
+    for i in range(0, row_len):
+        most_common_bit = _find_most_common_bit(diagnostics, i)
+        if invert:
+            most_common_bit = _invert_bit(most_common_bit)
+        diagnostics = [bit for bit in diagnostics if bit[i] == most_common_bit]
+        if len(diagnostics) == 1:
+            return diagnostics[0]
+    raise Exception("Could not reduce diagnostics to one number")
 
 
-def _calculate_co2_scrubber_rating(lines: List[str], pos: int = 0) -> int:
-    if len(lines) == 1:
-        return int(lines[0], 2)
+def part_2(diagnostics: List[str]) -> int:
+    row_len = len(diagnostics[0])
+    oxygen = _filter_diagnostics(diagnostics, row_len)
+    co2_scrubber = _filter_diagnostics(diagnostics, row_len, invert=True)
 
-    stats = _calculate_stats(lines)
-
-    keep = "1"
-    if stats[pos]["0"] <= stats[pos]["1"]:
-        keep = "0"
-    lines = [line for line in lines if line[pos] == keep]
-    return _calculate_co2_scrubber_rating(lines, pos + 1)
-
-
-def find_life_support_rating(lines: List[str]) -> int:
-    oxygen_rating = _calculate_oxygen_rating(lines)
-    co2_scrubber_rating = _calculate_co2_scrubber_rating(lines)
-    return oxygen_rating * co2_scrubber_rating
+    return int(oxygen, 2) * int(co2_scrubber, 2)

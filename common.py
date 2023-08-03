@@ -8,4 +8,4 @@ def read_file_to_ints(name: str) -> List[int]:
 
 def read_file(name: str) -> List[str]:
     with open(f"../inputs/{name}", "r") as file:
-        return file.readlines()
+        return [line.strip() for line in file.readlines()]

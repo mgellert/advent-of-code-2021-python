@@ -18,7 +18,7 @@ def parse_commands(lines: List[str]) -> List[Command]:
     return commands
 
 
-def calculate_position(commands: List[Command]) -> int:
+def part_1(commands: List[Command]) -> int:
     horizontal = 0
     depth = 0
     for command, amount in commands:
@@ -31,7 +31,7 @@ def calculate_position(commands: List[Command]) -> int:
     return horizontal * depth
 
 
-def calculate_aim(commands: List[Command]) -> int:
+def part_2(commands: List[Command]) -> int:
     horizontal = 0
     depth = 0
     aim = 0
