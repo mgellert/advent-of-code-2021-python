@@ -2,7 +2,8 @@ import unittest
 from dataclasses import dataclass
 from typing import List
 
-from day02.dive import calculate_position, read_file, calculate_aim
+from common import read_file
+from day02.dive import calculate_position, calculate_aim, parse_commands
 
 
 @dataclass
@@ -12,25 +13,20 @@ class TestCase:
 
 
 class DiveTest(unittest.TestCase):
-    def test_calculate_position(self):
-        testcases = [
-            TestCase(input=["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"], expected=150),
-            TestCase(input=read_file("day02"), expected=1989265)
-        ]
+    input = parse_commands(read_file("day02"))
+    test_input = parse_commands(["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"])
 
-        for case in testcases:
-            actual = calculate_position(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(calculate_position(self.test_input), 150)
 
-    def test_calculate_aim(self):
-        testcases = [
-            TestCase(input=["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"], expected=900),
-            TestCase(input=read_file("day02"), expected=1989265)
-        ]
+    def test_part_1_solution(self):
+        self.assertEqual(calculate_position(self.input), 1989265)
 
-        for case in testcases:
-            actual = calculate_aim(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_2_example(self):
+        self.assertEqual(calculate_aim(self.test_input), 900)
+
+    def test_part_2_solution(self):
+        self.assertEqual(calculate_aim(self.input), 2089174012)
 
 
 if __name__ == '__main__':
