@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 from typing import List
 
-from common import read_file
+from common import read_lines
 from day03.binary_diagnostic import part_1, part_2
 
 
@@ -15,7 +15,7 @@ class TestCase:
 class BinaryDiagnosticTest(unittest.TestCase):
     test_input = ["00100", "11110", "10110", "10111", "10101", "01111", "00111", "11100", "10000", "11001", "00010",
                   "01010"]
-    input = read_file("day03")
+    input = read_lines("day03")
 
     def test_part_1_example(self):
         self.assertEqual(part_1(self.test_input), 198)

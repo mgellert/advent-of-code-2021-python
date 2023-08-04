@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 from typing import List
 
-from common import read_file
+from common import read_lines
 from day02.dive import part_1, part_2, parse_commands
 
 
@@ -13,7 +13,7 @@ class TestCase:
 
 
 class DiveTest(unittest.TestCase):
-    input = parse_commands(read_file("day02"))
+    input = parse_commands(read_lines("day02"))
     test_input = parse_commands(["forward 5", "down 5", "forward 8", "up 3", "down 8", "forward 2"])
 
     def test_part_1_example(self):
