@@ -1,6 +1,10 @@
+import math
 import re
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Sequence
+
+line_re = re.compile("(\\d+),(\\d+) -> (\\d+),(\\d+)")
 
 
 @dataclass(eq=True, frozen=True)
@@ -8,11 +12,15 @@ class Point:
     x: int
     y: int
 
+    def calculate_delta(self, other: "Point") -> (int, int):
+        return sign(other.x - self.x), sign(other.y - self.y)
 
-line_re = re.compile("(\\d+),(\\d+) -> (\\d+),(\\d+)")
+    def is_diagonal(self, other: "Point") -> bool:
+        dx, dy = self.calculate_delta(other)
+        return dx != 0 and dy != 0
 
 
-def _parse_lines(lines: List[str]) -> List[Tuple[Point, Point]]:
+def parse_lines(lines: Sequence[str]) -> List[Tuple[Point, Point]]:
     points = []
     for line in lines:
         m = line_re.match(line)
@@ -22,47 +30,29 @@ def _parse_lines(lines: List[str]) -> List[Tuple[Point, Point]]:
     return points
 
 
-def _add_or_default(map: Dict[Point, int], point: Point):
-    if point in map:
-        map[point] = map[point] + 1
-    else:
-        map[point] = 1
+def _add_intermediate_points(diagram: Dict[Point, int], p1: Point, p2: Point):
+    dx, dy = p1.calculate_delta(p2)
+    i = p1
+    while i != p2:
+        diagram[i] += 1
+        i = Point(i.x + dx, i.y + dy)
+    diagram[i] += 1
 
 
-def _calculate_delta(p1: Point, p2: Point) -> Point:
-    return Point(sign(p2.x - p1.x), sign(p2.y - p1.y))
-
-
-def _build_map(points: List[Tuple[Point, Point]], diagonal: bool) -> Dict[Point, int]:
-    map = {}
+def _build_diagram(points: List[Tuple[Point, Point]], use_diagonals: bool) -> Dict[Point, int]:
+    diagram: Dict[Point, int] = defaultdict(int)
     for point in points:
         p1, p2 = point
-        dp = _calculate_delta(p1, p2)
-        if not diagonal and dp.x != 0 and dp.y != 0:
+        if not use_diagonals and p1.is_diagonal(p2):
             continue
-        curr = p1
-        while curr != p2:
-            _add_or_default(map, curr)
-            curr = Point(curr.x + dp.x, curr.y + dp.y)
-        _add_or_default(map, curr)
-    return map
+        _add_intermediate_points(diagram, p1, p2)
+    return diagram
 
 
-def read_file() -> List[str]:
-    with open("../inputs/day05", "r") as file:
-        return file.readlines()
+def sign(n: int) -> int:
+    return (n > 0) - (n < 0)
 
 
-def sign(a: int) -> int:
-    if a > 0:
-        return 1
-    elif a < 0:
-        return -1
-    else:
-        return 0
-
-
-def count_dangerous_areas(lines: List[str], diagonal: bool = False) -> int:
-    points = _parse_lines(lines)
-    map = _build_map(points, diagonal)
-    return len([1 for _, danger in map.items() if danger > 1])
+def count_dangerous_areas(points: List[Tuple[Point, Point]], use_diagonals: bool = False) -> int:
+    diagram = _build_diagram(points, use_diagonals)
+    return sum(1 for _, danger in diagram.items() if danger > 1)
