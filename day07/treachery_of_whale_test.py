@@ -1,30 +1,25 @@
 import unittest
-from dataclasses import dataclass
-from typing import List, Callable
 
-from day07.treachery_of_whale import read_file, find_optimal_pos, constant, \
+from common import read_line_to_ints
+from day07.treachery_of_whale import find_optimal_pos, constant, \
     increasing
 
 
-@dataclass
-class TestCase:
-    input: List[int]
-    fuel_consumption: Callable[[int, int], int]
-    expected: int
-
-
 class TreacheryOfWhaleTest(unittest.TestCase):
-    def test_find_optimal_pos(self):
-        testcases = [
-            TestCase(input=[16, 1, 2, 0, 4, 2, 7, 1, 2, 14], fuel_consumption=constant, expected=37),
-            TestCase(input=read_file(), fuel_consumption=constant, expected=328318),
-            TestCase(input=[16, 1, 2, 0, 4, 2, 7, 1, 2, 14], fuel_consumption=increasing, expected=168),
-            TestCase(input=read_file(), fuel_consumption=increasing, expected=89791146),
-        ]
+    test_input = (16, 1, 2, 0, 4, 2, 7, 1, 2, 14)
+    input = read_line_to_ints("day07")
 
-        for case in testcases:
-            actual = find_optimal_pos(case.input, case.fuel_consumption)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(find_optimal_pos(self.test_input, fuel_burn=constant), 37)
+
+    def test_part_1_solution(self):
+        self.assertEqual(find_optimal_pos(self.input, fuel_burn=constant), 328318)
+
+    def test_part_2_example(self):
+        self.assertEqual(find_optimal_pos(self.test_input, fuel_burn=increasing), 168)
+
+    def test_part_2_solution(self):
+        self.assertEqual(find_optimal_pos(self.input, fuel_burn=increasing), 89791146)
 
 
 if __name__ == '__main__':

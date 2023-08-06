@@ -1,17 +1,13 @@
 from typing import List, Callable
 
 
-def read_file() -> List[int]:
-    with open("../inputs/day07", "r") as file:
-        return [int(x) for x in file.read().strip().split(",")]
-
-
-def find_optimal_pos(positions: List[int], fuel_consumption: Callable[[int, int], int]) -> int:
-    fuel_consumptions = []
-    for p in range(min(positions), max(positions) + 1):
-        fuel = [fuel_consumption(p, i) for i in positions]
-        fuel_consumptions.append(sum(fuel))
-    return min(fuel_consumptions)
+def find_optimal_pos(crab_positions: List[int], fuel_burn: Callable[[int, int], int]) -> int:
+    return min(
+        # fuel cost for all crabs for specific alignment position
+        sum(fuel_burn(crab_pos, aligned_pos) for crab_pos in crab_positions)
+        # iterate through all possible alignment positions
+        for aligned_pos in range(min(crab_positions), max(crab_positions) + 1)
+    )
 
 
 def constant(a: int, b: int) -> int:
