@@ -1,15 +1,7 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
 from common import read_lines
 from day02.dive import part_1, part_2, parse_commands
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
 
 
 class DiveTest(unittest.TestCase):

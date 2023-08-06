@@ -1,15 +1,7 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
 from common import read_lines
 from day05.hydrothermal_venture import count_dangerous_areas, parse_lines
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
 
 
 class HydrothermalVentureTest(unittest.TestCase):
