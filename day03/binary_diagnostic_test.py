@@ -1,15 +1,7 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
 from common import read_lines
 from day03.binary_diagnostic import part_1, part_2
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
 
 
 class BinaryDiagnosticTest(unittest.TestCase):

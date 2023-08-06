@@ -14,3 +14,8 @@ def read_lines(name: str) -> List[str]:
 def read_file(name: str) -> str:
     with open(f"../inputs/{name}", "r") as file:
         return file.read()
+
+
+def read_line_to_ints(name: str) -> List[int]:
+    with open(f"../inputs/{name}", "r") as file:
+        return [int(x) for x in file.read().strip().split(",")]
