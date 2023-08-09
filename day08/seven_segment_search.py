@@ -1,88 +1,51 @@
 import re
 from typing import List, Tuple, Dict, Set
 
-
-def read_file() -> List[str]:
-    with open("../inputs/day08", "r") as file:
-        return file.readlines()
+line_re = re.compile("([\\w ]+) \\| ([\\w ]+)")
+wanted_lengths = (2, 3, 4, 7)
 
 
-line_re = re.compile(
-    "(\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) (\\w+) \\| (\\w+) (\\w+) (\\w+) (\\w+)")
+def parse_line(line: str) -> Tuple[List[str], List[str]]:
+    readings, outputs = line_re.match(line).groups()
+    return readings.split(), outputs.split()
 
 
-def _parse_line(line: str) -> Tuple[List[str], List[str]]:
-    m = line_re.match(line)
-    readings = []
-    outputs = []
-    for i in range(1, 11):
-        readings.append(m[i])
-    for i in range(11, 15):
-        outputs.append(m[i])
-    return readings, outputs
+def part_1(entries: List[Tuple[List[str], List[str]]]) -> int:
+    return sum(sum(1 for output in outputs if len(output) in wanted_lengths) for _, outputs in entries)
 
 
-def count_simple_digits(lines: List[str]) -> int:
-    count = 0
-    wanted_lens = [2, 3, 4, 7]
-    for line in lines:
-        _, outputs = _parse_line(line)
-        for output in outputs:
-            if len(output) in wanted_lens:
-                count += 1
-    return count
-
-
-def _to_set(a: str) -> Set[str]:
-    return {c for c in a}
-
-
-def _decipher_digits(all_ciphers: List[str]) -> Dict[int, Set[str]]:
-    deciphered: Dict[int, Set[str]] = {}
-    while len(deciphered) < 10:
-        for cipher in all_ciphers:
-            cipher_chars: Set[str] = _to_set(cipher)
-            if len(cipher) == 2:
-                deciphered[1] = cipher_chars
-            elif deciphered.get(5) and len(deciphered[5].difference(cipher_chars)) == 2 and len(cipher_chars) == 5:
-                deciphered[2] = cipher_chars
-            elif deciphered.get(5) and len(deciphered[5].difference(cipher_chars)) == 1 and len(cipher_chars) == 5:
-                deciphered[3] = cipher_chars
-            elif len(cipher) == 4:
-                deciphered[4] = cipher_chars
-            elif deciphered.get(6) and len(deciphered[6].difference(cipher_chars)) == 1 and len(cipher_chars) == 5:
-                deciphered[5] = cipher_chars
-            elif deciphered.get(1) and deciphered.get(4) and deciphered.get(7) and not \
-                    deciphered[1].issubset(cipher_chars) and not deciphered[4].issubset(cipher_chars) and not \
-                    deciphered[7].issubset(cipher_chars) and len(cipher_chars) == 6:
-                deciphered[6] = cipher_chars
-            elif len(cipher) == 3:
-                deciphered[7] = cipher_chars
-            elif len(cipher) == 7:
-                deciphered[8] = cipher_chars
-            elif deciphered.get(8) and deciphered.get(4) and cipher_chars.issubset(deciphered[8]) and \
-                    deciphered[4].issubset(cipher_chars) and len(cipher_chars) == 6:
-                deciphered[9] = cipher_chars
-            elif deciphered.get(8) and deciphered.get(7) and cipher_chars.issubset(deciphered[8]) and \
-                    deciphered[7].issubset(cipher_chars) and len(cipher_chars) == 6:
-                deciphered[0] = cipher_chars
-    return deciphered
+def _find_key(entry: List[str]) -> Dict[int, Set[str]]:
+    keys: Dict[int, Set[str]] = {}
+    while len(keys) < 10:
+        for digit in entry:
+            chars = set(digit)
+            if len(digit) == 2:
+                keys[1] = chars
+            elif len(chars) == 5 and keys.get(5) and len(keys[5].difference(chars)) == 2:
+                keys[2] = chars
+            elif len(chars) == 5 and keys.get(1) and keys[1].issubset(chars):
+                keys[3] = chars
+            elif len(digit) == 4:
+                keys[4] = chars
+            elif len(chars) == 5 and keys.get(6) and len(keys[6].difference(chars)) == 1:
+                keys[5] = chars
+            elif len(chars) == 6 and keys.get(1) and not keys[1].issubset(chars):
+                keys[6] = chars
+            elif len(digit) == 3:
+                keys[7] = chars
+            elif len(digit) == 7:
+                keys[8] = chars
+            elif len(chars) == 6 and keys.get(4) and keys[4].issubset(chars):
+                keys[9] = chars
+            elif len(chars) == 6 and keys.get(8) and chars.issubset(keys[8]):
+                keys[0] = chars
+    return keys
 
 
 def _decipher(readings: List[str], outputs: List[str]) -> int:
-    all_ciphers = readings + outputs
-    deciphered = {frozenset(v): k for k, v in _decipher_digits(all_ciphers).items()}
-    result = 0
-    m = 1000
-    for i in outputs:
-        result += m * deciphered[frozenset(_to_set(i))]
-        m = int(m / 10)
-    return result
+    deciphered = {frozenset(chars): str(digit) for digit, chars in _find_key(readings + outputs).items()}
+    return int("".join(deciphered[frozenset(set(i))] for i in outputs))
 
 
-def sum_output_values(lines: List[str]) -> int:
-    sum = 0
-    for line in lines:
-        readings, outputs = _parse_line(line)
-        sum += _decipher(readings, outputs)
-    return sum
+def part_2(entries: List[Tuple[List[str], List[str]]]) -> int:
+    return sum(_decipher(readings, output) for readings, output in entries)
