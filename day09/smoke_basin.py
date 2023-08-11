@@ -1,39 +1,36 @@
 from functools import reduce
 from typing import List, Set, Tuple
 
-
-def read_file() -> str:
-    with open("../inputs/day09", "r") as file:
-        return file.read()
+Heightmap = List[List[int]]
+Point = Tuple[int, int]
 
 
-def _parse_input(input: str) -> List[List[int]]:
-    return [[int(c) for c in line] for line in input.split("\n")]
+def parse_input(raw: str) -> Heightmap:
+    return [[int(c) for c in line] for line in raw.split("\n")]
 
 
-def _is_lowpoint(i: int, j: int, map: List[List[int]]) -> bool:
-    top = map[i - 1][j] if i > 0 else 99
-    right = map[i][j + 1] if j < len(map[i]) - 1 else 99
-    bottom = map[i + 1][j] if i < len(map) - 1 else 99
-    left = map[i][j - 1] if j > 0 else 99
-    middle = map[i][j]
+def _is_low_point(i: int, j: int, heightmap: Heightmap) -> bool:
+    top = heightmap[i - 1][j] if i > 0 else 9
+    right = heightmap[i][j + 1] if j < len(heightmap[i]) - 1 else 9
+    bottom = heightmap[i + 1][j] if i < len(heightmap) - 1 else 9
+    left = heightmap[i][j - 1] if j > 0 else 9
+    middle = heightmap[i][j]
     return middle < top and middle < right and middle < bottom and middle < left
 
 
-def _count_basin(i: int, j: int, map: List[List[int]]) -> int:
-    basin: Set[Tuple[int, int]] = set()
+def _count_basin(i: int, j: int, heightmap: Heightmap) -> int:
+    basin: Set[Point] = set()
     basin.add((i, j))
     prev_len = 0
 
     while prev_len < len(basin):
-        new_points: Set[Tuple[int, int]] = set()
+        new_points: Set[Point] = set()
         for p in basin:
-            i = p[0]
-            j = p[1]
-            top = map[i - 1][j] if i > 0 else 9
-            right = map[i][j + 1] if j < len(map[i]) - 1 else 9
-            bottom = map[i + 1][j] if i < len(map) - 1 else 9
-            left = map[i][j - 1] if j > 0 else 9
+            i, j = p
+            top = heightmap[i - 1][j] if i > 0 else 9
+            right = heightmap[i][j + 1] if j < len(heightmap[i]) - 1 else 9
+            bottom = heightmap[i + 1][j] if i < len(heightmap) - 1 else 9
+            left = heightmap[i][j - 1] if j > 0 else 9
 
             if top < 9:
                 new_points.add((i - 1, j))
@@ -50,22 +47,20 @@ def _count_basin(i: int, j: int, map: List[List[int]]) -> int:
     return len(basin)
 
 
-def sum_low_point_risk_level(input: str) -> int:
-    map = _parse_input(input)
-    sum = 0
-    for i in range(0, len(map)):
-        for j in range(0, len(map[i])):
-            if _is_lowpoint(i, j, map):
-                sum += 1 + map[i][j]
-    return sum
+def part_1(heightmap: Heightmap) -> int:
+    sum_risk = 0
+    for i in range(0, len(heightmap)):
+        for j in range(0, len(heightmap[i])):
+            if _is_low_point(i, j, heightmap):
+                sum_risk += 1 + heightmap[i][j]
+    return sum_risk
 
 
-def multiply_largest_basins(input: str) -> int:
-    map = _parse_input(input)
+def part_2(heightmap: Heightmap) -> int:
     basins: List[int] = []
-    for i in range(0, len(map)):
-        for j in range(0, len(map[i])):
-            if _is_lowpoint(i, j, map):
-                basins.append(_count_basin(i, j, map))
+    for i in range(0, len(heightmap)):
+        for j in range(0, len(heightmap[i])):
+            if _is_low_point(i, j, heightmap):
+                basins.append(_count_basin(i, j, heightmap))
 
     return reduce(lambda x, y: x * y, list(reversed(sorted(basins)))[0:3])

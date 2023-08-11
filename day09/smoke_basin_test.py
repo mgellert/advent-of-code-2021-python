@@ -1,51 +1,32 @@
 import textwrap
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day09.smoke_basin import sum_low_point_risk_level, read_file, multiply_largest_basins
-
-
-@dataclass
-class TestCase:
-    input: str
-    expected: int
+from common import read_file
+from day09.smoke_basin import part_1, part_2, parse_input
 
 
 class TestSmokeBasin(unittest.TestCase):
-    def test_count_simple_digits(self):
-        testcases = [
-            TestCase(input=textwrap.dedent(
-                """
-                2199943210
-                3987894921
-                9856789892
-                8767896789
-                9899965678
-                """).strip()
-                     , expected=15),
-            TestCase(input=read_file(), expected=524)
-        ]
-        for case in testcases:
-            actual = sum_low_point_risk_level(case.input)
-            self.assertEqual(case.expected, actual)
+    test_input = parse_input(textwrap.dedent(
+        """
+        2199943210
+        3987894921
+        9856789892
+        8767896789
+        9899965678
+        """).strip())
+    input = parse_input(read_file("day09"))
 
-    def test_multiply_largest_basins(self):
-        testcases = [
-            TestCase(input=textwrap.dedent(
-                """
-                2199943210
-                3987894921
-                9856789892
-                8767896789
-                9899965678
-                """).strip()
-                     , expected=1134),
-            TestCase(input=read_file(), expected=1235430)
-        ]
-        for case in testcases:
-            actual = multiply_largest_basins(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(part_1(self.test_input), 15)
+
+    def test_part_1_solution(self):
+        self.assertEqual(part_1(self.input), 524)
+
+    def test_part_2_example(self):
+        self.assertEqual(part_2(self.test_input), 1134)
+
+    def test_part_2_solution(self):
+        self.assertEqual(part_2(self.input), 1235430)
 
 
 if __name__ == '__main__':
