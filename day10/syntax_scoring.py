@@ -1,11 +1,5 @@
 from typing import List
 
-
-def read_file() -> List[str]:
-    with open("../inputs/day10", "r") as file:
-        return [line.strip() for line in file.readlines()]
-
-
 brackets = ["()", "{}", "[]", "<>"]
 error_scoring = {
     ")": 3,
@@ -22,15 +16,15 @@ autocomplete_scoring = {
 
 
 def _reduce_line(line: str) -> str:
-    found_at_least_one = True
-    while found_at_least_one:
-        found_at_least_one = False
+    while True:
+        found_any = False
         for bracket in brackets:
             index = line.find(bracket)
             if index != -1:
                 line = line[:index] + line[index + 2:]
-                found_at_least_one = True
-    return line
+                found_any = True
+        if not found_any:
+            return line
 
 
 def _score_illegal_line(line: str) -> int:
@@ -40,24 +34,20 @@ def _score_illegal_line(line: str) -> int:
     return error_scoring[line[min(closing_positions)]]
 
 
-def calculate_syntax_error_score(lines: List[str]) -> int:
-    return sum([_score_illegal_line(_reduce_line(l)) for l in lines])
+def part_1(lines: List[str]) -> int:
+    return sum(_score_illegal_line(_reduce_line(line)) for line in lines)
 
 
 def _score_incomplete_line(line: str) -> int:
     if _score_illegal_line(line) > 0:
         return 0
     score = 0
-    for c in line[::-1]:
-        score = score * 5 + autocomplete_scoring[c]
+    for char in line[::-1]:
+        score = score * 5 + autocomplete_scoring[char]
     return score
 
 
-def calculate_autocomplete_score(lines: List[str]) -> int:
-    scores = []
-    for line in lines:
-        score = _score_incomplete_line(_reduce_line(line))
-        if score > 0:
-            scores.append(score)
-    scores = list(sorted(scores))
+def part_2(lines: List[str]) -> int:
+    scores = (_score_incomplete_line(_reduce_line(line)) for line in lines)
+    scores = list(sorted(score for score in scores if score > 0))
     return scores[len(scores) // 2]

@@ -1,56 +1,35 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day10.syntax_scoring import calculate_syntax_error_score, read_file, calculate_autocomplete_score
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
+from common import read_lines
+from day10.syntax_scoring import part_1, part_2
 
 
 class SyntaxScoringTest(unittest.TestCase):
-    def test_calculate_syntax_error_score(self):
-        testcases = [
-            TestCase(input=[
-                "[({(<(())[]>[[{[]{<()<>>",
-                "[(()[<>])]({[<{<<[]>>(",
-                "{([(<{}[<>[]}>{[]{[(<()>",
-                "(((({<>}<{<{<>}{[]{[]{}",
-                "[[<[([]))<([[{}[[()]]]",
-                "[{[{({}]{}}([{[{{{}}([]",
-                "{<[[]]>}<{[{[{[]{()[[[]",
-                "[<(<(<(<{}))><([]([]()",
-                "<{([([[(<>()){}]>(<<{{",
-                "<{([{{}}[<[[[<>{}]]]>[]]"
-            ], expected=26397),
-            TestCase(input=read_file(), expected=166191),
-        ]
-        for case in testcases:
-            actual = calculate_syntax_error_score(case.input)
-            self.assertEqual(case.expected, actual)
+    test_input = [
+        "[({(<(())[]>[[{[]{<()<>>",
+        "[(()[<>])]({[<{<<[]>>(",
+        "{([(<{}[<>[]}>{[]{[(<()>",
+        "(((({<>}<{<{<>}{[]{[]{}",
+        "[[<[([]))<([[{}[[()]]]",
+        "[{[{({}]{}}([{[{{{}}([]",
+        "{<[[]]>}<{[{[{[]{()[[[]",
+        "[<(<(<(<{}))><([]([]()",
+        "<{([([[(<>()){}]>(<<{{",
+        "<{([{{}}[<[[[<>{}]]]>[]]"
+    ]
+    input = read_lines("day10")
 
-    def test_calculate_autocomplete_score(self):
-        testcases = [
-            TestCase(input=[
-                "[({(<(())[]>[[{[]{<()<>>",
-                "[(()[<>])]({[<{<<[]>>(",
-                "{([(<{}[<>[]}>{[]{[(<()>",
-                "(((({<>}<{<{<>}{[]{[]{}",
-                "[[<[([]))<([[{}[[()]]]",
-                "[{[{({}]{}}([{[{{{}}([]",
-                "{<[[]]>}<{[{[{[]{()[[[]",
-                "[<(<(<(<{}))><([]([]()",
-                "<{([([[(<>()){}]>(<<{{",
-                "<{([{{}}[<[[[<>{}]]]>[]]"
-            ], expected=288957),
-            TestCase(input=read_file(), expected=1),
-        ]
-        for case in testcases:
-            actual = calculate_autocomplete_score(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(part_1(self.test_input), 26397)
+
+    def test_part_1_solution(self):
+        self.assertEqual(part_1(self.input), 166191)
+
+    def test_part_2_example(self):
+        self.assertEqual(part_2(self.test_input), 288957)
+
+    def test_part_2_solution(self):
+        self.assertEqual(part_2(self.input), 1152088313)
 
 
 if __name__ == '__main__':
