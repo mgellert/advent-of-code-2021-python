@@ -1,51 +1,33 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day12.passage_pathing import count_paths, read_file, count_paths2
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
+from common import read_lines
+from day12.passage_pathing import count_paths, count_paths2, parse_input
 
 
 class PassagePathingTest(unittest.TestCase):
-    def test_count_paths(self):
-        testcases = [
-            TestCase(input=[
-                "start-A",
-                "start-b",
-                "A-c",
-                "A-b",
-                "b-d",
-                "A-end",
-                "b-end",
-            ], expected=10),
-            TestCase(input=read_file(), expected=1)
-        ]
+    test_input = parse_input([
+        "start-A",
+        "start-b",
+        "A-c",
+        "A-b",
+        "b-d",
+        "A-end",
+        "b-end",
+    ])
+    input = parse_input(read_lines("day12"))
 
-        for case in testcases:
-            actual = count_paths(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(count_paths(self.test_input), 10)
 
-    def test_count_paths2(self):
-        testcases = [
-            TestCase(input=[
-                "start-A",
-                "start-b",
-                "A-c",
-                "A-b",
-                "b-d",
-                "A-end",
-                "b-end",
-            ], expected=36),
-            TestCase(input=read_file(), expected=144309)
-        ]
+    def test_part_1_solution(self):
+        self.assertEqual(count_paths(self.input), 5157)
 
-        for case in testcases:
-            actual = count_paths2(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_2_example(self):
+        self.assertEqual(count_paths2(self.test_input), 36)
+
+    def test_part_2_solution(self):
+        self.assertEqual(count_paths2(self.input), 144309)
+
+
 if __name__ == '__main__':
     unittest.main()

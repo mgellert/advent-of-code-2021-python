@@ -1,91 +1,21 @@
-import re
-from collections import deque
-from dataclasses import dataclass
-from typing import List, Type, Dict, Set
+from collections import deque, defaultdict, Counter
+from typing import List, Dict, Set, Callable
+
+SearchFn = Callable[[str, List[str]], bool]
 
 
-@dataclass
-class Node:
-    name: str
-    edges: Set[str]
-
-    def is_small(self) -> bool:
-        return self.name.islower()
-
-
-input_re = re.compile("(\\w+)-(\\w+)")
-
-
-def read_file() -> List[str]:
-    with open("../inputs/day12", "r") as file:
-        return file.readlines()
-
-
-def _add_or_create(map: Dict[str, Node], name: str, edge: str):
-    if name in map:
-        map[name].edges.add(edge)
-    else:
-        map[name] = Node(name=name, edges=set())
-        map[name].edges.add(edge)
-
-
-def _parse_input(lines: List[str]) -> Dict[str, Node]:
-    map = {}
+def parse_input(lines: List[str]) -> Dict[str, Set[str]]:
+    cave_system = defaultdict(set)
     for line in lines:
-        m = input_re.match(line)
-        node1 = m[1]
-        node2 = m[2]
-        _add_or_create(map, node1, node2)
-        _add_or_create(map, node2, node1)
-    return map
+        node1, node2 = line.split("-")
+        cave_system[node1].add(node2)
+        cave_system[node2].add(node1)
+    return cave_system
 
 
-def _bfs(map: Dict[str, Node], current: Node) -> List[List[str]]:
-    queue = []
-    queue.append([current.name])
-    results = []
-
-    while len(queue) > 0:
-        path = queue.pop(0)
-        name = path[-1]
-        if name == "end":
-            results.append(path)
-        else:
-            for n in map[name].edges:
-                if n != "start" and (n.isupper() or (n.islower() and n not in path)):
-                    p = path.copy()
-                    p.append(n)
-                    queue.append(p)
-    return results
-
-
-def count_paths(lines: List[str]) -> int:
-    map = _parse_input(lines)
-    return len(_bfs(map, map["start"]))
-
-
-def _not_in_path_twice(path: List[str]) -> bool:
-    result = {}
-    for node in path:
-        if node.islower() and node not in ["start", "end"]:
-            if node in result:
-                result[node] += 1
-            else:
-                result[node] = 1
-
-    count = 0
-    bad = 0
-    for k, v in result.items():
-        if v == 2:
-            count += 1
-        elif v > 2:
-            bad += 1
-    return bad == 0 and (count == 1 or count == 0)
-
-
-def _bfs2(map: Dict[str, Node], current: Node) -> List[List[str]]:
+def _bfs(cave_system: Dict[str, Set[str]], path_search: SearchFn, current: str = "start") -> List[List[str]]:
     queue = deque()
-    queue.append([current.name])
+    queue.append([current])
     results = []
 
     while queue:
@@ -94,14 +24,36 @@ def _bfs2(map: Dict[str, Node], current: Node) -> List[List[str]]:
         if name == "end":
             results.append(path)
         else:
-            for n in map[name].edges:
-                if n != "start" and (n.isupper() or (n.islower() and _not_in_path_twice(path))):
-                    p = path.copy()
-                    p.append(n)
-                    queue.append(p)
+            for n in cave_system[name]:
+                is_not_in_path = path_search(n, path)
+                if n != "start" and (n.isupper() or (n.islower() and is_not_in_path)):
+                    queue.append(path + [n])
     return results
 
 
-def count_paths2(lines: List[str]) -> int:
-    map = _parse_input(lines)
-    return len(_bfs2(map, map["start"]))
+def _simple_path_search(n: str, path: List[str]):
+    return n not in path
+
+
+def _path_search_more_allowed(n: str, path: List[str]) -> bool:
+    full_path = [*path, n]
+    result = defaultdict(int)
+    more_than_twice = 0
+
+    for node in full_path:
+        if node.islower() and node not in ["start", "end"]:
+            result[node] += 1
+            count = result[node]
+            if count >= 2:
+                more_than_twice += 1
+                if count > 2 or more_than_twice > 1:
+                    return False
+    return True
+
+
+def count_paths(cave_system: Dict[str, Set[str]]) -> int:
+    return len(_bfs(cave_system, _simple_path_search))
+
+
+def count_paths2(cave_system: Dict[str, Set[str]]) -> int:
+    return len(_bfs(cave_system, _path_search_more_allowed))
