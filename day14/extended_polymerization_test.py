@@ -1,74 +1,43 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day14.extended_polymerization import most_and_least_common, read_input
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
+from common import read_lines
+from day14.extended_polymerization import most_and_least_common
 
 
 class ExtendedPolymerizationTest(unittest.TestCase):
-    def test_visible_dots_after_first_fold_10_steps(self):
-        testcases = [
-            TestCase(input=[
-                "NNCB",
-                "",
-                "CH -> B",
-                "HH -> N",
-                "CB -> H",
-                "NH -> C",
-                "HB -> C",
-                "HC -> B",
-                "HN -> C",
-                "NN -> C",
-                "BH -> H",
-                "NC -> B",
-                "NB -> B",
-                "BN -> B",
-                "BB -> N",
-                "BC -> B",
-                "CC -> N",
-                "CN -> C"
-            ], expected=1588),
-            TestCase(input=read_input(), expected=3284)
-        ]
+    test_input = [
+        "NNCB",
+        "",
+        "CH -> B",
+        "HH -> N",
+        "CB -> H",
+        "NH -> C",
+        "HB -> C",
+        "HC -> B",
+        "HN -> C",
+        "NN -> C",
+        "BH -> H",
+        "NC -> B",
+        "NB -> B",
+        "BN -> B",
+        "BB -> N",
+        "BC -> B",
+        "CC -> N",
+        "CN -> C"
+    ]
+    input = read_lines("day14")
 
-        for case in testcases:
-            actual = most_and_least_common(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(most_and_least_common(self.test_input, steps=10), 1588)
 
-    def test_visible_dots_after_first_fold_40_steps(self):
-        testcases = [
-            TestCase(input=[
-                "NNCB",
-                "",
-                "CH -> B",
-                "HH -> N",
-                "CB -> H",
-                "NH -> C",
-                "HB -> C",
-                "HC -> B",
-                "HN -> C",
-                "NN -> C",
-                "BH -> H",
-                "NC -> B",
-                "NB -> B",
-                "BN -> B",
-                "BB -> N",
-                "BC -> B",
-                "CC -> N",
-                "CN -> C"
-            ], expected=2188189693529),
-            TestCase(input=read_input(), expected=4302675529689)
-        ]
+    def test_part_1_solution(self):
+        self.assertEqual(most_and_least_common(self.input, steps=10), 3284)
 
-        for case in testcases:
-            actual = most_and_least_common(case.input, steps=40)
-            self.assertEqual(case.expected, actual)
+    def test_part_2_example(self):
+        self.assertEqual(most_and_least_common(self.test_input, steps=40), 2188189693529)
+
+    def test_part_2_solution(self):
+        self.assertEqual(most_and_least_common(self.input, steps=40), 4302675529689)
 
 
 if __name__ == '__main__':
