@@ -1,58 +1,35 @@
 import unittest
-from dataclasses import dataclass
-from typing import List
 
-from day15.chiton import find_lowest_total_risk_path, read_input, find_lowest_total_risk_path_in_large_area
-
-
-@dataclass
-class TestCase:
-    input: List[str]
-    expected: int
+from common import read_lines
+from day15.chiton import find_lowest_total_risk_path, find_lowest_total_risk_path_in_large_cavern
 
 
 class ChitonTest(unittest.TestCase):
-    def test_find_lowest_total_risk_path(self):
-        testcases = [
-            TestCase(input=[
-                "1163751742",
-                "1381373672",
-                "2136511328",
-                "3694931569",
-                "7463417111",
-                "1319128137",
-                "1359912421",
-                "3125421639",
-                "1293138521",
-                "2311944581"
-            ], expected=40),
-            TestCase(input=read_input(), expected=390)
-        ]
+    test_input = [
+        "1163751742",
+        "1381373672",
+        "2136511328",
+        "3694931569",
+        "7463417111",
+        "1319128137",
+        "1359912421",
+        "3125421639",
+        "1293138521",
+        "2311944581"
+    ]
+    input = read_lines("day15")
 
-        for case in testcases:
-            actual = find_lowest_total_risk_path(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_1_example(self):
+        self.assertEqual(find_lowest_total_risk_path(self.test_input), 40)
 
-    def test_find_lowest_total_risk_path_large_area(self):
-        testcases = [
-            TestCase(input=[
-                "1163751742",
-                "1381373672",
-                "2136511328",
-                "3694931569",
-                "7463417111",
-                "1319128137",
-                "1359912421",
-                "3125421639",
-                "1293138521",
-                "2311944581"
-            ], expected=315),
-            TestCase(input=read_input(), expected=2814)
-        ]
+    def test_part_1_solution(self):
+        self.assertEqual(find_lowest_total_risk_path(self.input), 390)
 
-        for case in testcases:
-            actual = find_lowest_total_risk_path_in_large_area(case.input)
-            self.assertEqual(case.expected, actual)
+    def test_part_2_example(self):
+        self.assertEqual(find_lowest_total_risk_path_in_large_cavern(self.test_input), 315)
+
+    def test_part_2_solution(self):
+        self.assertEqual(find_lowest_total_risk_path_in_large_cavern(self.input), 2814)
 
 
 if __name__ == '__main__':
